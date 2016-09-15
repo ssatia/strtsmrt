@@ -23,3 +23,6 @@ Sentiment analyzer that returns objective values for positivity, neutrality and
 negativity for some given text
 Neural network that takes in the sentiment analyzer output as attributes, and
 returns predictions for positive trends in all stocks
+
+Notes:
+http://feeds.finance.yahoo.com/rss/2.0/headline?s=a&region=US&lang=en-US
