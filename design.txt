@@ -1,0 +1,25 @@
+Design document for stockx
+
+For each stock, do this:
+Get latest news for the stock symbol
+
+Training neural net:
+Run news through sentiment analyzer, which returns objective values for
+positivity, neutrality and negativity
+Use these as attributes to generate probability that the stock will have a
+positive trend
+Use next day stock values as results
+Split data into .66 and .33, for training and testing respectively
+
+Using neural net:
+Run news through sentiment analyzer, which returns objective values for
+positivity, neutrality and negativity
+Use these as attributes for the neural net to generate probability that the
+stock will have a positive trend
+
+Tasks:
+Find/create an API that returns latest stock news given stock symbol
+Sentiment analyzer that returns objective values for positivity, neutrality and
+negativity for some given text
+Neural network that takes in the sentiment analyzer output as attributes, and
+returns predictions for positive trends in all stocks
