@@ -8,10 +8,10 @@ def getNewsForSymbol(symbol):
 
     data = xmltodict.parse(data)
     data = data['rss']['channel']['item']
-    headlines = []
+    headlines = ''
 
     for i in range(len(data)):
-        headlines.append(data[i]['title'])
+        headlines += data[i]['title']
 
     return headlines
 
@@ -27,4 +27,4 @@ def getNews():
 
     return news
 
-getNews()
+# getNews()
