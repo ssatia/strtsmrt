@@ -27,4 +27,6 @@ returns predictions for positive trends in all stocks
 Notes:
 Historical data:
 http://ichart.finance.yahoo.com/table.csv?s={symbol}&a={month}&b={day}&c={year}
+News:
+http://www.reuters.com/finance/stocks/companyNews?symbol=AAPL.O&date=01082014
 http://feeds.finance.yahoo.com/rss/2.0/headline?s=a&region=US&lang=en-US
