@@ -9,7 +9,7 @@ int main() {
 
   while(getline(cin, s)) {
     for(i=0;i<s.length();++i) {
-      if(s[i]=='|') break;
+      if(s[i]==',') break;
     }
     if(!column_name) {
       cout<<s.substr(0,i)<<endl;

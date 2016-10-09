@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 import requests
 import datetime
 
-FNAME = "test_stocks.txt"
+FNAME = "nasdaqlisted_formatted.txt"
 stocks = []
 
 def getNewsForDate(date):
@@ -16,17 +16,20 @@ def getNewsForDate(date):
         soup = BeautifulSoup(response.text, "html.parser")
         divs = soup.findAll('div', {'class': 'feature'})
         print 'Found ' + str(len(divs)) + ' articles.'
+
+        if(len(divs) == 0):
+            continue
+
         data = ''
         for div in divs:
             data = data.join(div.findAll(text=True))
-
-        file.write(stocks[i] + ',' + str(len(divs)) + ',' + data.replace('\n', ' '))
+        file.write(stocks[i] + ',' + data.replace('\n', ' '))
         file.write('\n')
     file.close()
 
 def getNews():
     date = datetime.date(2013, 1, 1)
-    endDate = datetime.date(2013, 1, 3)
+    endDate = datetime.date(2016, 10, 8)
 
     while(date <= endDate):
         getNewsForDate(date)
