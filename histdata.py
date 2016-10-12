@@ -1,11 +1,11 @@
 import requests
 
-FNAME = "nasdaqlisted_formatted.txt"
+FNAME = "snp500_formatted.txt"
 
 def getHistData():
     DAY = '01'
     MONTH = '00' # month must be m - 1
-    YEAR = '2010'
+    YEAR = '2013'
 
     with open(FNAME) as f:
         stocks = f.readlines()
