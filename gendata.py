@@ -29,7 +29,7 @@ def genData():
     data_file = open('data/dat.csv', 'w+')
     csv_writer = csv.writer(data_file)
     date = datetime.date(2013, 1, 1)
-    endDate = datetime.date(2013, 6, 30)
+    endDate = datetime.date(2016, 10, 6)
 
     while(date <= endDate):
         print "Checking data for " + date.strftime('%Y-%m-%d')
