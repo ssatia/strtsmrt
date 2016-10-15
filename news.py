@@ -28,7 +28,7 @@ def getNewsForDate(date):
     file.close()
 
 def getNews():
-    date = datetime.date(2013, 7, 27)
+    date = datetime.date(2016, 9, 14)
     endDate = datetime.date(2016, 10, 7)
 
     while(date <= endDate):
