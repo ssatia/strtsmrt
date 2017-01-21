@@ -1,10 +1,12 @@
-import requests
-import json
+from google.cloud import language
 
 def analyzeText(text):
     print "Performing sentiment analysis."
-    POST_SIZE_LIMIT = 50000
-    text = text[:POST_SIZE_LIMIT]
-    jsonResponse = requests.post('http://text-processing.com/api/sentiment/', data = {'text': text})
-    response = json.loads(jsonResponse.text)
-    return response
+
+    API_SIZE_LIMIT = 1000000
+    text = text[:API_SIZE_LIMIT]
+    language_client = language.Client()
+    document = language_client.document_from_text(text)
+    sentiment = document.analyze_sentiment()
+
+    return sentiment

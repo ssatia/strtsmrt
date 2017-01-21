@@ -26,9 +26,9 @@ def getStockData(symbol, date):
     return -1
 
 def genData():
-    data_file = open('data/dat.csv', 'w+')
+    data_file = open('data/dat.csv', 'a')
     csv_writer = csv.writer(data_file)
-    date = datetime.date(2013, 1, 1)
+    date = datetime.date(2013, 2, 19)
     endDate = datetime.date(2016, 10, 6)
 
     while(date <= endDate):
@@ -51,8 +51,7 @@ def genData():
 
             data = []
             data.extend((row[0], date.timetuple().tm_yday))
-            data.extend((sentdata['probability']['neg'], sentdata['probability']['neutral'], sentdata['probability']['pos']))
-            data.append(sentdata['label'])
+            data.extend((sentdata.score, sentdata.magnitude))
             data.extend(stockdata)
             csv_writer.writerow(data)
 
