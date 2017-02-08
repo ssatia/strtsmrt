@@ -11,24 +11,24 @@ def getData():
         data = list(reader)
 
     for i in range(len(data)):
-        data[i] = data[i][1:]
+        data[i] = data[i][2:]
 
     return data
 
 def learn(data):
-    data = normalize(np.array(getData()).astype(float))
+    data = normalize(data)
     np.random.shuffle(data)
 
-    X = data[:,0:4]
-    Y = data[:,4].reshape(-1, 1)
+    X = data[:,0:3]
+    Y = data[:,3].reshape(-1, 1)
 
     train_X, test_X, train_Y, test_Y = train_test_split(X, Y, test_size=0.30)
     training_data_size = train_X.shape[0]
 
-    stock_data = tf.placeholder(tf.float32, [None, 4])
+    stock_data = tf.placeholder(tf.float32, [None, 3])
     stock_price = tf.placeholder(tf.float32, [None, 1])
 
-    W = tf.Variable(tf.zeros([4, 1], dtype=tf.float32))
+    W = tf.Variable(tf.zeros([3, 1], dtype=tf.float32))
     y = tf.matmul(stock_data, W)
 
     learning_rate = 1e-3
@@ -64,15 +64,15 @@ def learn(data):
 
     avg_perc_error = 0
     for i in range(len(test_Y)):
-        actual_change = abs(test_Y[i][0] - test_X[i][3]) / test_X[i][3]
-        predicted_change = abs(test_results[i][0] - test_X[i][3]) / test_X[i][3]
+        actual_change = abs(test_Y[i][0] - test_X[i][2]) / test_X[i][2]
+        predicted_change = abs(test_results[i][0] - test_X[i][2]) / test_X[i][2]
         avg_perc_error = avg_perc_error + abs(actual_change - predicted_change)
 
     avg_perc_error = (avg_perc_error * 100) / len(test_Y)
     print "Average percentage error: ", avg_perc_error
 
 def main():
-    data = normalize(np.array(getData()).astype(float))
+    data = np.array(getData()).astype(float)
     learn(data)
 
 main()

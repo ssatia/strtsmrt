@@ -9,4 +9,4 @@ strtsmrt is a machine learning system that predicts stock prices based on news a
 * Uses historical stock data fetched from Yahoo! Finance for training and testing purposes
 
 ##Results:
-Using a day's news sources, strtsmrt predicts the next day's stock price with an average percentage error of __1.438%__ using the linear regression model.
+Using a day's news sources, strtsmrt predicts the next day's stock price with an average percentage error of __0.8973%__ using the linear regression model.
