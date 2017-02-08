@@ -15,7 +15,7 @@ def getData():
 
     return data
 
-def lin_reg():
+def learn(data):
     data = normalize(np.array(getData()).astype(float))
     np.random.shuffle(data)
 
@@ -71,4 +71,8 @@ def lin_reg():
     avg_perc_error = (avg_perc_error * 100) / len(test_Y)
     print "Average percentage error: ", avg_perc_error
 
-lin_reg()
+def main():
+    data = normalize(np.array(getData()).astype(float))
+    learn(data)
+
+main()

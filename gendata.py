@@ -14,7 +14,7 @@ def getStockData(symbol, date):
 
     data = []
 
-    print "Getting stock data for " + symbol + " for " + date.strftime('%Y-%m-%d')
+    print 'Getting stock data for %s for date %s' % (symbol, date.strftime('%Y-%m-%d'))
 
     for row in csv_file:
         if(row[0] == date.strftime('%Y-%m-%d')):
@@ -32,7 +32,7 @@ def genData():
     endDate = datetime.date(2016, 10, 6)
 
     while(date <= endDate):
-        print "Checking data for " + date.strftime('%Y-%m-%d')
+        print 'Checking data for ' + date.strftime('%Y-%m-%d')
 
         day = date.weekday()
         if(day == 4 or day == 5):

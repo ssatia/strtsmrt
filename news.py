@@ -11,7 +11,7 @@ def getNewsForDate(date):
     for i in range(len(stocks)):
         query = 'http://www.reuters.com/finance/stocks/companyNews?symbol=' + stocks[i] + '&date=' + format(date.month, '02d') + format(date.day, '02d') + str(date.year)
         print('Getting news for ' + stocks[i])
-        print(query)
+
         response = requests.get(query)
         soup = BeautifulSoup(response.text, "html.parser")
         divs = soup.findAll('div', {'class': 'feature'})
