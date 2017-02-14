@@ -19,5 +19,3 @@ def getHistData():
         file = open('data/hsd/' + stock + '.csv', 'w')
         file.write(response.text)
         file.close()
-
-getHistData()

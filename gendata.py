@@ -1,9 +1,18 @@
 import csv
 import datetime
+import histdata
+import news
 import sentiment
 import sys
 
 csv.field_size_limit(sys.maxint)
+
+def fetchData():
+    print 'Updating historical stock data'
+    histdata.getHistData()
+
+    print 'Updating news data'
+    news.init()
 
 def getStockData(symbol, date):
     file = open('data/hsd/' + symbol + '.csv')
@@ -26,12 +35,16 @@ def getStockData(symbol, date):
     return -1
 
 def genData():
-    data_file = open('data/dat.csv', 'a')
-    csv_writer = csv.writer(data_file)
-    date = datetime.date(2013, 2, 19)
-    endDate = datetime.date(2016, 10, 6)
+    dataHistFile = open('dat.pkl', 'r+b')
+    dataHist = pickle.load(dataHistFile)
+    dataFileNumber = dataHist['data_file_number'] + 1
 
-    while(date <= endDate):
+    dataFile = open('data/dat_' + dataFileNumber + '.csv', 'a')
+    csvWriter = csv.writer(dataFile)
+    date = dateHist['last_updated']
+    endDate = datetime.date.today()
+
+    while(date < endDate):
         print 'Checking data for ' + date.strftime('%Y-%m-%d')
 
         day = date.weekday()
@@ -53,8 +66,18 @@ def genData():
             data.extend((row[0], date.timetuple().tm_yday))
             data.extend((sentdata.score, sentdata.magnitude))
             data.extend(stockdata)
-            csv_writer.writerow(data)
+            csvWriter.writerow(data)
 
         date += datetime.timedelta(days=1)
 
-genData()
+    dataHist['data_file_number'] = dataFileNumber
+    dataHist['last_updated'] = endDate
+    dataHistFile.seek(0)
+    pickle.dump(dataHist, dataHistFile, protocol = pickle.HIGHEST_PROTOCOL)
+    dataHistFile.close()
+
+def init():
+    fetchData()
+    genData()
+
+init()

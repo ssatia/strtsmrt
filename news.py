@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
-import requests
 import datetime
+import pickle
+import requests
 
 FNAME = "snp500_formatted.txt"
 stocks = []
@@ -28,12 +29,19 @@ def getNewsForDate(date):
     file.close()
 
 def getNews():
-    date = datetime.date(2016, 9, 14)
-    endDate = datetime.date(2016, 10, 7)
+    dataHistFile = open('dat.pkl', 'rb')
+    dataHist = pickle.load(dataHistFile)
+    date = dataHist['last_updated'] + datetime.timedelta(days=1)
+    endDate = datetime.date.today()
 
     while(date <= endDate):
         getNewsForDate(date)
         date += datetime.timedelta(days=1)
+
+    dataHist['last_updated'] = endDate
+    dataHistFile.seek(0)
+    pickle.dump(dataHist, dataHistFile, protocol = pickle.HIGHEST_PROTOCOL)
+    dataHistFile.close()
 
 def init():
     global stocks
@@ -43,5 +51,3 @@ def init():
         stocks[i] = stocks[i].rstrip('\n')
 
     getNews()
-
-init()
