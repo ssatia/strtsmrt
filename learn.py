@@ -5,7 +5,7 @@ from sklearn import preprocessing
 import tensorflow as tf
 
 def getData():
-    with open('data/dat.csv') as csv_file:
+    with open('data/dat_0.csv') as csv_file:
         reader = csv.reader(csv_file)
         data = list(reader)
 
