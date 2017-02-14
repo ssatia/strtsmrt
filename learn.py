@@ -44,7 +44,7 @@ def learn(data):
     stock_data = tf.placeholder(tf.float32, [None, num_params])
     stock_price = tf.placeholder(tf.float32, [None, 1])
 
-    W = tf.Variable(tf.zeros([num_params, 1], dtype=tf.float32))
+    W = tf.Variable(tf.random_uniform([num_params, 1], dtype=tf.float32), name = "W")
     y = tf.matmul(stock_data, W)
 
     learning_rate = 1e-3
