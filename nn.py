@@ -39,9 +39,11 @@ def learn(data):
     Y = data[:,num_params].reshape(-1, 1)
 
     train_X, test_X, train_Y, test_Y = cross_validation.train_test_split(X, Y, test_size=0.30)
-    training_data_size = train_X.shape[0]
+    train_opening_price = train_X[:, num_params - 1].reshape(-1, 1)
+    test_opening_price = test_X[:, num_params - 1].reshape(-1, 1)
 
     stock_data = tf.placeholder(tf.float32, [None, num_params])
+    opening_price = tf.placeholder(tf.float32, [None, 1])
     stock_price = tf.placeholder(tf.float32, [None, 1])
 
     # Number of neurons in the hidden layer
@@ -67,7 +69,7 @@ def learn(data):
     output_layer = tf.matmul(layer_2, weights['out'])
 
     learning_rate = 1e-3
-    cost_function = tf.reduce_mean(tf.pow(stock_price - output_layer, 2))
+    cost_function = tf.reduce_mean(tf.pow(tf.div(tf.sub(stock_price, output_layer), opening_price), 2))
     optimizer = tf.train.AdamOptimizer(learning_rate).minimize(cost_function)
 
     last_cost = 0
@@ -81,11 +83,11 @@ def learn(data):
         sess.run(init)
 
         while True:
-            sess.run(optimizer, feed_dict={stock_data: train_X, stock_price: train_Y})
+            sess.run(optimizer, feed_dict={stock_data: train_X, opening_price: train_opening_price, stock_price: train_Y})
 
             if epochs % 100 == 0:
-                cost = sess.run(cost_function, feed_dict={stock_data: train_X, stock_price: train_Y})
-                print "Epoch: %d: Error: %.4f" %(epochs, cost)
+                cost = sess.run(cost_function, feed_dict={stock_data: train_X, opening_price: train_opening_price, stock_price: train_Y})
+                print "Epoch: %d: Error: %f" %(epochs, cost)
 
                 if abs(cost - last_cost) <= tolerance or epochs > max_epochs:
                     print "Converged."
@@ -94,17 +96,24 @@ def learn(data):
 
             epochs += 1
 
-        print "Test cost: ", sess.run(cost_function, feed_dict={stock_data: test_X, stock_price: test_Y})
+        print "Test error: ", sess.run(cost_function, feed_dict={stock_data: test_X, opening_price: test_opening_price, stock_price: test_Y})
         test_results = sess.run(output_layer, feed_dict={stock_data: test_X, stock_price: test_Y})
 
     avg_perc_error = 0
+    max_perc_error = 0
+    mei = 0
     for i in range(len(test_Y)):
         actual_change = abs(test_Y[i][0] - test_X[i][num_params - 1]) / test_X[i][num_params - 1]
         predicted_change = abs(test_results[i][0] - test_X[i][num_params - 1]) / test_X[i][num_params - 1]
-        avg_perc_error = avg_perc_error + abs(actual_change - predicted_change)
+        delta = abs(actual_change - predicted_change)
+        avg_perc_error = avg_perc_error + delta
+        if delta > max_perc_error:
+            max_perc_error = delta
+            mei = i
 
     avg_perc_error = (avg_perc_error * 100) / len(test_Y)
-    print "Average percentage error: ", avg_perc_error
+    max_perc_error *= 100
+    print "Maximum percentage error: %f\nAverage percentage error: %f\n" % (max_perc_error, avg_perc_error)\
 
 def main():
     data = np.array(getData())
