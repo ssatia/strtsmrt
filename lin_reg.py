@@ -38,8 +38,13 @@ def learn(data):
     X = data[:,0:num_params]
     Y = data[:,num_params].reshape(-1, 1)
 
-    train_X, test_X, train_Y, test_Y = cross_validation.train_test_split(X, Y, test_size=0.30)
+    # Split the data into training, validation, and test sets (60/20/20)
+    train_X, test_X, train_Y, test_Y = cross_validation.train_test_split(X, Y, test_size = 0.40)
+    test_X, valid_X, test_Y, valid_Y = cross_validation.train_test_split(test_X, test_Y, test_size = 0.50)
+
+    # Get the initial stock prices for computing the relative cost
     train_opening_price = train_X[:, num_params - 1].reshape(-1, 1)
+    valid_opening_price = valid_X[:, num_params - 1].reshape(-1, 1)
     test_opening_price = test_X[:, num_params - 1].reshape(-1, 1)
 
     stock_data = tf.placeholder(tf.float32, [None, num_params])
@@ -53,10 +58,14 @@ def learn(data):
     cost_function = tf.reduce_mean(tf.pow(tf.div(tf.sub(stock_price, y), opening_price), 2))
     optimizer = tf.train.AdamOptimizer(learning_rate).minimize(cost_function)
 
-    last_cost = 0
-    tolerance = 1e-6
+    last_train_cost = 0
+    best_valid_cost = 1e6
+    best_valid_epoch = 0
+    valid_epoch_threshold = 1
+    tolerance = 1e-10
     epochs = 1
     max_epochs = 1e6
+    saver = tf.train.Saver([W])
 
     sess = tf.Session()
     with sess.as_default():
@@ -67,13 +76,25 @@ def learn(data):
             sess.run(optimizer, feed_dict={stock_data: train_X, opening_price: train_opening_price, stock_price: train_Y})
 
             if epochs % 100 == 0:
-                cost = sess.run(cost_function, feed_dict={stock_data: train_X, opening_price: train_opening_price, stock_price: train_Y})
-                print "Epoch: %d: Error: %f" %(epochs, cost)
+                train_cost = sess.run(cost_function, feed_dict={stock_data: train_X, opening_price: train_opening_price, stock_price: train_Y})
+                valid_cost = sess.run(cost_function, feed_dict={stock_data: valid_X, opening_price: valid_opening_price, stock_price: valid_Y})
+                print "Epoch: %d: Training error: %f Validation error: %f" %(epochs, train_cost, valid_cost)
 
-                if abs(cost - last_cost) <= tolerance or epochs > max_epochs:
+                if(valid_cost < best_valid_cost):
+                    best_valid_cost = valid_cost
+                    best_valid_epoch = epochs
+                    save_path = saver.save(sess, 'lr-model-valid')
+
+                if(valid_epoch_threshold <= epochs - best_valid_epoch):
+                    saver.restore(sess, save_path)
+                    print "Early stopping."
+                    break
+
+                if abs(train_cost - last_train_cost) <= tolerance or epochs > max_epochs:
                     print "Converged."
                     break
-                last_cost = cost
+
+                last_train_cost = train_cost
 
             epochs += 1
 
