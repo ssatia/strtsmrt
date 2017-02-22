@@ -38,7 +38,7 @@ def learn(data):
     X = data[:,0:num_params]
     Y = data[:,num_params].reshape(-1, 1)
 
-    # Split the data into training, validation, and test sets (60/20/20)
+    # Split the data into training, validation, and testing sets (60/20/20)
     train_X, test_X, train_Y, test_Y = cross_validation.train_test_split(X, Y, test_size = 0.40)
     test_X, valid_X, test_Y, valid_Y = cross_validation.train_test_split(test_X, test_Y, test_size = 0.50)
 
