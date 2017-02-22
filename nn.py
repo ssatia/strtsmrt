@@ -63,17 +63,19 @@ def learn(data):
         'out': tf.Variable(tf.random_normal([1]))
     }
 
-    # Hidden layers
-    layer_1 = tf.add(tf.matmul(stock_data, weights['h1']), biases['b1'])
-    layer_1 = tf.nn.relu(layer_1)
-    layer_2 = tf.add(tf.matmul(layer_1, weights['h2']), biases['b2'])
-    layer_2 = tf.nn.relu(layer_2)
-
     # Implement dropout to reduce overfitting
-    keep_prob = tf.placeholder(tf.float32)
-    layer_3_dropout = tf.nn.dropout(layer_2, keep_prob)
+    keep_prob_input = tf.placeholder(tf.float32)
+    keep_prob_hidden = tf.placeholder(tf.float32)
 
-    output_layer = tf.add(tf.matmul(layer_3_dropout, weights['out']), biases['out'])
+    # Hidden layers
+    input_dropout = tf.nn.dropout(stock_data, keep_prob_input)
+    layer_1 = tf.add(tf.matmul(input_dropout, weights['h1']), biases['b1'])
+    layer_1 = tf.nn.relu(layer_1)
+    layer_1_dropout = tf.nn.dropout(layer_1, keep_prob_hidden)
+    layer_2 = tf.add(tf.matmul(layer_1_dropout, weights['h2']), biases['b2'])
+    layer_2 = tf.nn.relu(layer_2)
+    layer_2_dropout = tf.nn.dropout(layer_2, keep_prob_hidden)
+    output_layer = tf.add(tf.matmul(layer_2_dropout, weights['out']), biases['out'])
 
     learning_rate = 1e-4
     cost_function = tf.reduce_mean(tf.pow(tf.div(tf.sub(stock_price, output_layer), opening_price), 2))
@@ -90,10 +92,10 @@ def learn(data):
         sess.run(init)
 
         while True:
-            sess.run(optimizer, feed_dict={stock_data: train_X, opening_price: train_opening_price, stock_price: train_Y, keep_prob: 0.5})
+            sess.run(optimizer, feed_dict={stock_data: train_X, opening_price: train_opening_price, stock_price: train_Y, keep_prob_input: 0.8, keep_prob_hidden: 0.5})
 
             if epochs % 100 == 0:
-                cost = sess.run(cost_function, feed_dict={stock_data: train_X, opening_price: train_opening_price, stock_price: train_Y, keep_prob: 0.5})
+                cost = sess.run(cost_function, feed_dict={stock_data: train_X, opening_price: train_opening_price, stock_price: train_Y, keep_prob_input: 0.8, keep_prob_hidden: 0.5})
                 print "Epoch: %d: Error: %f" %(epochs, cost)
 
                 if abs(cost - last_cost) <= tolerance or epochs > max_epochs:
@@ -103,8 +105,8 @@ def learn(data):
 
             epochs += 1
 
-        print "Test error: ", sess.run(cost_function, feed_dict={stock_data: test_X, opening_price: test_opening_price, stock_price: test_Y, keep_prob: 1.0})
-        test_results = sess.run(output_layer, feed_dict={stock_data: test_X, stock_price: test_Y, keep_prob: 1.0})
+        print "Test error: ", sess.run(cost_function, feed_dict={stock_data: test_X, opening_price: test_opening_price, stock_price: test_Y, keep_prob_input: 1.0, keep_prob_hidden: 1.0})
+        test_results = sess.run(output_layer, feed_dict={stock_data: test_X, stock_price: test_Y, keep_prob_input: 1.0, keep_prob_hidden: 1.0})
 
     avg_perc_error = 0
     max_perc_error = 0
