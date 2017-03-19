@@ -78,7 +78,7 @@ def learn(data):
     output_layer = tf.add(tf.matmul(layer_2_dropout, weights['out']), biases['out'])
 
     learning_rate = 1e-4
-    cost_function = tf.reduce_mean(tf.pow(tf.div(tf.sub(stock_price, output_layer), opening_price), 2))
+    cost_function = tf.reduce_mean(tf.pow(tf.div(tf.subtract(stock_price, output_layer), opening_price), 2))
     optimizer = tf.train.AdamOptimizer(learning_rate).minimize(cost_function)
 
     last_cost = 0
@@ -88,7 +88,7 @@ def learn(data):
 
     sess = tf.Session()
     with sess.as_default():
-        init = tf.initialize_all_variables()
+        init = tf.global_variables_initializer()
         sess.run(init)
 
         while True:

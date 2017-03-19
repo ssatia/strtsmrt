@@ -55,7 +55,7 @@ def learn(data):
     y = tf.matmul(stock_data, W)
 
     learning_rate = 1e-3
-    cost_function = tf.reduce_mean(tf.pow(tf.div(tf.sub(stock_price, y), opening_price), 2))
+    cost_function = tf.reduce_mean(tf.pow(tf.div(tf.subtract(stock_price, y), opening_price), 2))
     optimizer = tf.train.AdamOptimizer(learning_rate).minimize(cost_function)
 
     last_train_cost = 0
@@ -65,11 +65,11 @@ def learn(data):
     tolerance = 1e-10
     epochs = 1
     max_epochs = 1e6
-    saver = tf.train.Saver([W])
+    # saver = tf.train.Saver([W])
 
     sess = tf.Session()
     with sess.as_default():
-        init = tf.initialize_all_variables()
+        init = tf.global_variables_initializer()
         sess.run(init)
 
         while True:
@@ -83,10 +83,10 @@ def learn(data):
                 if(valid_cost < best_valid_cost):
                     best_valid_cost = valid_cost
                     best_valid_epoch = epochs
-                    save_path = saver.save(sess, 'lr-model-valid')
+                    # save_path = saver.save(sess, 'lr-model-valid')
 
                 if(valid_epoch_threshold <= epochs - best_valid_epoch):
-                    saver.restore(sess, save_path)
+                    # saver.restore(sess, save_path)
                     print "Early stopping."
                     break
 
