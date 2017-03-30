@@ -3,6 +3,7 @@ import numpy as np
 from sklearn import cross_validation
 from sklearn import preprocessing
 import tensorflow as tf
+import tensorflow.contrib.slim as slim
 
 def getData():
     with open('data/dat_0.csv') as csv_file:
@@ -53,13 +54,9 @@ def learn(data):
     n_hidden_2 = 3
 
     weights = {
-        'h1': tf.Variable(tf.random_normal([num_params, n_hidden_1])),
-        'h2': tf.Variable(tf.random_normal([n_hidden_1, n_hidden_2])),
         'out': tf.Variable(tf.random_normal([n_hidden_2, 1]))
     }
     biases = {
-        'b1': tf.Variable(tf.random_normal([n_hidden_1])),
-        'b2': tf.Variable(tf.random_normal([n_hidden_2])),
         'out': tf.Variable(tf.random_normal([1]))
     }
 
@@ -69,11 +66,9 @@ def learn(data):
 
     # Hidden layers
     input_dropout = tf.nn.dropout(stock_data, keep_prob_input)
-    layer_1 = tf.add(tf.matmul(input_dropout, weights['h1']), biases['b1'])
-    layer_1 = tf.nn.relu(layer_1)
+    layer_1 = slim.fully_connected(input_dropout, n_hidden_1, biases_initializer = None, activation_fn = tf.nn.relu)
     layer_1_dropout = tf.nn.dropout(layer_1, keep_prob_hidden)
-    layer_2 = tf.add(tf.matmul(layer_1_dropout, weights['h2']), biases['b2'])
-    layer_2 = tf.nn.relu(layer_2)
+    layer_2 = slim.fully_connected(input_dropout, n_hidden_1, biases_initializer = None, activation_fn = tf.nn.relu)
     layer_2_dropout = tf.nn.dropout(layer_2, keep_prob_hidden)
     output_layer = tf.add(tf.matmul(layer_2_dropout, weights['out']), biases['out'])
 
